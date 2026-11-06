@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 /**
- * apx — declarative, reversible config overlay for AI coding agents.
+ * gpt-purge — declarative, reversible config patches for Codex & ChatGPT.
  *
- *   apx status   [--json]      show applied / pending / drifted per patch
- *   apx apply    [--dry]       apply pending patches, back up each file once
- *   apx revert                 restore originals from *.apx.bak
- *   apx budget <file> --kind chatgpt-custom|chatgpt-gpt|codex-agents
+ *   gpt-purge status   [--json]   show applied / pending / drifted per patch
+ *   gpt-purge apply    [--dry]    apply pending patches, back up each file once
+ *   gpt-purge revert              restore originals from *.apx.bak
+ *   gpt-purge budget <file> --kind chatgpt-custom|chatgpt-gpt|codex-agents
+ *
+ * Registry default: <root>/patches/registry.json when the target project ships
+ * one, otherwise the registry bundled with this tool.
  *
  * Exit codes: 0 clean · 1 usage or IO error · 2 drift detected
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { fileURLToPath } from 'node:url';
 import { loadRegistry, plan, apply, revert } from '../src/patcher.mjs';
 import { budget, formatBudget } from '../src/targets.mjs';
 
@@ -33,13 +37,17 @@ const args = parseArgs(process.argv.slice(2));
 const cmd = args._[0] ?? 'status';
 const root = path.resolve(args.root ?? process.cwd());
 const configDir = path.resolve(args.config ?? path.join(os.homedir(), '.codex'));
-const registryFile = path.resolve(args.registry ?? path.join(root, 'patches', 'registry.json'));
+const toolRegistry = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'patches', 'registry.json');
+const rootRegistry = path.join(root, 'patches', 'registry.json');
+const registryFile = args.registry
+  ? path.resolve(args.registry)
+  : (fs.existsSync(rootRegistry) ? rootRegistry : toolRegistry);
 const opts = { root, configDir, dryRun: Boolean(args.dry), includeChatgpt: args.chatgpt !== false };
 
 const SYMBOL = { applied: '✓', pending: '·', drifted: '!', skipped: '-' };
 
 function fail(msg) {
-  process.stderr.write(`apx: ${msg}\n`);
+  process.stderr.write(`gpt-purge: ${msg}\n`);
   process.exit(1);
 }
 
@@ -49,7 +57,7 @@ if (!COMMANDS.includes(cmd)) fail(`unknown command "${cmd}" (${COMMANDS.join(' |
 if (cmd === 'budget') {
   const file = args._[1];
   const kind = args.kind ?? 'chatgpt-custom';
-  if (!file) fail('usage: apx budget <file> --kind chatgpt-custom|chatgpt-gpt|codex-agents');
+  if (!file) fail('usage: gpt-purge budget <file> --kind chatgpt-custom|chatgpt-gpt|codex-agents');
   const text = fs.readFileSync(path.resolve(root, file), 'utf8');
   const r = budget(text, kind);
   process.stdout.write(`${formatBudget(r)}\n`);
@@ -86,7 +94,7 @@ if (cmd === 'apply') {
   for (const r of results) {
     const rel = path.relative(root, r.file) || r.file;
     const suffix = r.error ? `  ← ${r.error}` : '';
-    process.stdout.write(`${{ applied: '✓', unchanged: '=', drifted: '!', skipped: '-', error: 'x' }[r.action]} ` +
+    process.stdout.write(`${{ applied: '✓', 'would-apply': '~', unchanged: '=', drifted: '!', skipped: '-', error: 'x' }[r.action]} ` +
       `${r.patch.id.padEnd(28)} ${r.action.padEnd(9)} ${rel}${suffix}\n`);
   }
   const bad = results.filter((r) => r.action === 'error' || r.action === 'drifted');
@@ -103,4 +111,3 @@ if (cmd === 'revert') {
   }
   process.exit(0);
 }
-

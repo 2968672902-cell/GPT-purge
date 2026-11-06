@@ -237,7 +237,7 @@ export function apply(registry, opts) {
       }
       try {
         doc = applyOne(doc, row.patch);
-        results.push({ ...row, action: 'applied' });
+        results.push({ ...row, action: opts.dryRun ? 'would-apply' : 'applied' });
       } catch (err) {
         results.push({ ...row, action: 'error', error: err.message });
       }
@@ -264,7 +264,7 @@ export function revert(registry, opts) {
       if (next !== doc) {
         doc = next;
         changed = true;
-        results.push({ ...row, action: 'reverted' });
+        results.push({ ...row, action: opts.dryRun ? 'would-revert' : 'reverted' });
       }
     }
     const bak = `${file}.apx.bak`;

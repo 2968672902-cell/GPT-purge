@@ -164,7 +164,7 @@ node bin/gpt-purge.mjs budget chatgpt/instructions.md --kind chatgpt-custom
 |---|---|
 | `--root <dir>` | project root, where `AGENTS.md` lives (default: cwd) |
 | `--config <dir>` | Codex config dir, default `~/.codex` |
-| `--registry <file>` | patch registry, default `<repo>/patches/registry.json` |
+| `--registry <file>` | patch registry; defaults to `<root>/patches/registry.json` when the project has one, otherwise the registry bundled with the tool |
 | `--dry` | preview only, nothing written |
 | `--json` | machine-readable output (for CI) |
 | `--chatgpt <bool>` | whether to process the ChatGPT target, default `true` |

@@ -169,7 +169,7 @@ node bin/gpt-purge.mjs budget chatgpt/instructions.md --kind chatgpt-custom
 |---|---|
 | `--root <dir>` | 项目根目录，`AGENTS.md` 从这儿找（默认当前目录） |
 | `--config <dir>` | Codex 配置目录，默认 `~/.codex` |
-| `--registry <file>` | 补丁注册表路径，默认 `<repo>/patches/registry.json` |
+| `--registry <file>` | 补丁注册表路径；默认先用 `<root>/patches/registry.json`，目标项目里没有时回落到工具自带的 `patches/registry.json` |
 | `--dry` | 只预览，不写盘 |
 | `--json` | 机器可读输出（给 CI 用） |
 | `--chatgpt <bool>` | 是否处理 ChatGPT 目标，默认 `true` |
