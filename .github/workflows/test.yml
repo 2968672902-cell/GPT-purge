@@ -1,0 +1,30 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [20, 22, 24]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Run tests
+        run: node --test
+      - name: CLI smoke test
+        shell: bash
+        run: |
+          mkdir -p /tmp/demo/.codex
+          printf '# demo\n' > /tmp/demo/AGENTS.md
+          node bin/gpt-purge.mjs status --root /tmp/demo --config /tmp/demo/.codex
+          node bin/gpt-purge.mjs apply  --root /tmp/demo --config /tmp/demo/.codex
+          node bin/gpt-purge.mjs revert --root /tmp/demo --config /tmp/demo/.codex

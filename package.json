@@ -1,0 +1,48 @@
+{
+  "name": "gpt-purge",
+  "version": "1.0.0",
+  "description": "Declarative, reversible config patches for Codex (AGENTS.md, config.toml) and ChatGPT instructions — ID-based, drift-detecting, byte-exact rollback.",
+  "type": "module",
+  "bin": {
+    "gpt-purge": "./bin/gpt-purge.mjs",
+    "apx": "./bin/gpt-purge.mjs"
+  },
+  "exports": {
+    ".": "./src/patcher.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "status": "node bin/gpt-purge.mjs status",
+    "apply": "node bin/gpt-purge.mjs apply"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2968672902-cell/GPT-purge.git"
+  },
+  "homepage": "https://github.com/2968672902-cell/GPT-purge",
+  "bugs": {
+    "url": "https://github.com/2968672902-cell/GPT-purge/issues"
+  },
+  "keywords": [
+    "codex",
+    "chatgpt",
+    "agents-md",
+    "config-toml",
+    "patch",
+    "policy",
+    "drift",
+    "cli"
+  ],
+  "license": "MIT",
+  "files": [
+    "bin",
+    "src",
+    "patches",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ]
+}

@@ -1,0 +1,7 @@
+node_modules/
+*.apx.bak
+.apx-state.json
+test/fixture/
+!test/fixture/.gitkeep
+.DS_Store
+Thumbs.db

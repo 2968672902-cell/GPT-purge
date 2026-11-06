@@ -1,0 +1,55 @@
+{
+  "$comment": "Example registry. Copy it, edit the bodies, keep the ids stable — the id is what status/revert match on.",
+  "version": 1,
+  "patches": [
+    {
+      "id": "AGENTS_HOUSE_RULES",
+      "kind": "insert-block",
+      "target": "codex",
+      "file": "AGENTS.md",
+      "body": "## 项目约定\n\n- 包管理器固定为 pnpm，不要引入 npm/yarn 锁文件\n- 改动前先跑 `pnpm test`，改动后必须再跑一次\n- 只改与任务相关的文件；顺手重构请单独提交\n- 新增依赖需要在 PR 描述里写明理由"
+    },
+    {
+      "id": "AGENTS_REVIEW_CHECKLIST",
+      "kind": "insert-block",
+      "target": "codex",
+      "file": "AGENTS.md",
+      "body": "## 提交前自查\n\n1. 是否有未使用的 import 或调试输出\n2. 错误路径是否都有处理，而不是只覆盖 happy path\n3. 新增的公开函数是否有类型与文档注释\n4. 是否引入了新的静默失败（catch 后什么都不做）"
+    },
+    {
+      "id": "CODEX_APPROVAL_POLICY",
+      "kind": "toml-key",
+      "target": "codex-config",
+      "file": "config.toml",
+      "section": "",
+      "key": "approval_policy",
+      "value": "\"on-request\"",
+      "$comment": "on-request 是工作默认值：可自动读、可写工作区，越界才停下来问。"
+    },
+    {
+      "id": "CODEX_SANDBOX_MODE",
+      "kind": "toml-key",
+      "target": "codex-config",
+      "file": "config.toml",
+      "section": "",
+      "key": "sandbox_mode",
+      "value": "\"workspace-write\""
+    },
+    {
+      "id": "CODEX_NETWORK_OFF",
+      "kind": "toml-key",
+      "target": "codex-config",
+      "file": "config.toml",
+      "section": "sandbox_workspace_write",
+      "key": "network_access",
+      "value": "false"
+    },
+    {
+      "id": "CHATGPT_HOUSE_RULES",
+      "kind": "insert-block",
+      "target": "chatgpt",
+      "file": "chatgpt/instructions.md",
+      "body": "回答用简体中文。代码、命令、报错保持原文。\n\n- 先给可执行结论，再给理由；不要开场白\n- 涉及取舍时列出选项与代价，不要替我做决定\n- 不确定的地方直接标注「未验证」，不要编造出处"
+    }
+  ]
+}
